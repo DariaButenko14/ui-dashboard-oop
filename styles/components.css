@@ -1,0 +1,89 @@
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  
+  .widget {
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .widget-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid #eef2f7;
+  }
+  
+  .widget-controls .icon-btn {
+    background: #e5e7eb;
+    color: #111827;
+    border-radius: 8px;
+    padding: 4px 8px;
+    margin-left: 6px;
+  }
+  .widget-controls .icon-btn:hover { filter: brightness(0.98); }
+  .widget-controls .danger { background: var(--danger); color: white; }
+  
+  .widget-body {
+    padding: 12px;
+  }
+  .widget-body.hidden { display: none; }
+  
+  /* ToDo */
+  .todo-input {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .todo-input input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    outline: none;
+  }
+  .todo-input input:focus { box-shadow: 0 0 0 4px var(--ring); }
+  
+  .todo-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .todo-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 6px;
+  }
+  .todo-list li.done span { text-decoration: line-through; color: var(--muted); }
+  .todo-list .remove {
+    background: var(--danger);
+    color: #fff;
+    border-radius: 8px;
+    border: 0;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+  
+  /* Quote */
+  .quote {
+    margin: 0 0 12px 0;
+    font-style: italic;
+  }
+  .quote p { margin: 0 0 6px 0; }
+  .quote cite { color: var(--muted); }
+  
+  /* Weather */
+  .weather .status { margin: 0 0 8px 0; color: var(--muted); }
+  .weather .temp { font-weight: 600; font-size: 18px; margin: 0 0 8px 0; }
+  .weather .controls { display: flex; justify-content: flex-end; }
+  
