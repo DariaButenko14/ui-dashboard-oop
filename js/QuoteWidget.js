@@ -1,79 +1,74 @@
-import { UIComponent } from './UIComponent.js';
+// js/QuoteWidget.js
+import UIComponent from './UIComponent.js';
 
-export class QuoteWidget extends UIComponent {
-    #currentQuote;
+export default class QuoteWidget extends UIComponent {
+  constructor(config = {}) {
+    super({ title: config.title || 'Quote', id: config.id });
+    // Набор цитат — можно расширить
+    this.quotes = [
+      "Не тот велик, кто никогда не падал, а тот велик — кто падал и вставал. — Конфуций",
+      "Учитесь, пока живы; если вы умрете, учиться будет поздно. — Леонардо да Винчи",
+      "Секрет изменений — сосредоточить всю свою энергию не на борьбе со старым, а на создании нового. — Сократ",
+      "Лучше сделать и пожалеть, чем не сделать и пожалеть. — неизвестный",
+      "Кто хочет — ищет возможность. Кто не хочет — ищет причину. — неизвестный"
+    ];
+    this.current = null;
+    // bound handlers
+    this._listenersLocal = [];
+  }
 
-    constructor(config = {}) {
-        super({
-            title: config.title || 'Цитата дня',
-            icon: 'fas fa-quote-right',
-            id: config.id
-        });
-        
-        this.#currentQuote = config.quote || null;
-        this.#fetchRandomQuote();
+  render() {
+    const root = super.render();
+    this._body.innerHTML = '';
+
+    const quoteWrap = document.createElement('div');
+    quoteWrap.className = 'quote-wrap';
+
+    const quoteText = document.createElement('blockquote');
+    quoteText.className = 'quote-text';
+    quoteText.textContent = '';
+
+    const btn = document.createElement('button');
+    btn.className = 'quote-refresh';
+    btn.textContent = 'Обновить';
+
+    quoteWrap.append(quoteText, btn);
+    this._body.append(quoteWrap);
+
+    const onRefresh = (e) => {
+      this._setRandomQuote();
+      this._updateQuoteText();
+    };
+
+    btn.addEventListener('click', onRefresh);
+    this._listeners.push({ target: btn, type: 'click', handler: onRefresh });
+
+    // initial
+    this._setRandomQuote();
+    this._updateQuoteText();
+
+    // ссылки
+    this._refs = { quoteText, btn };
+
+    return root;
+  }
+
+  _setRandomQuote() {
+    if (!this.quotes || this.quotes.length === 0) {
+      this.current = 'Нет цитат.';
+      return;
     }
+    const idx = Math.floor(Math.random() * this.quotes.length);
+    this.current = this.quotes[idx];
+  }
 
-    async #fetchRandomQuote() {
-        try {
-            // API для получения случайных цитат
-            const response = await fetch('https://api.quotable.io/random');
-            const data = await response.json();
-            this.#currentQuote = {
-                text: data.content,
-                author: data.author
-            };
-            
-            // Если виджет уже создан, обновляем его
-            if (this.element) {
-                this.update(this.render());
-            }
-        } catch (error) {
-            console.error('Ошибка при получении цитаты:', error);
-            // Резервная цитата
-            this.#currentQuote = {
-                text: 'Код — это поэзия, написанная для машин.',
-                author: 'Анонимный программист'
-            };
-        }
+  _updateQuoteText() {
+    if (this._refs && this._refs.quoteText) {
+      this._refs.quoteText.textContent = this.current;
     }
+  }
 
-    render() {
-        if (!this.#currentQuote) {
-            return '<div class="loading"><i class="fas fa-spinner"></i><p>Загрузка цитаты...</p></div>';
-        }
-
-        return `
-            <div class="quote-content">
-                <div class="quote-text">"${this.#currentQuote.text}"</div>
-                <div class="quote-author">— ${this.#currentQuote.author}</div>
-                <div class="quote-controls">
-                    <button class="btn btn-primary refresh-quote">
-                        <i class="fas fa-sync-alt"></i> Новая цитата
-                    </button>
-                </div>
-            </div>
-        `;
-    }
-
-    create() {
-        const element = super.create();
-        this.#setupEventListeners(element);
-        return element;
-    }
-
-    #setupEventListeners(element) {
-        const refreshBtn = element.querySelector('.refresh-quote');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => {
-                refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
-                refreshBtn.disabled = true;
-                
-                this.#fetchRandomQuote().finally(() => {
-                    refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Новая цитата';
-                    refreshBtn.disabled = false;
-                });
-            });
-        }
-    }
+  onDestroy() {
+    this._refs = null;
+  }
 }

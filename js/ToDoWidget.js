@@ -1,119 +1,139 @@
-import { UIComponent } from './UIComponent.js';
+// js/ToDoWidget.js
+import UIComponent from './UIComponent.js';
 
-export class ToDoWidget extends UIComponent {
-    #todos;
+export default class ToDoWidget extends UIComponent {
+  constructor(config = {}) {
+    super({ title: config.title || 'ToDo', id: config.id });
+    this.tasks = []; // { id, text, done }
+    // bound handlers для корректного удаления
+    this._handlers = {};
+  }
 
-    constructor(config = {}) {
-        super({
-            title: config.title || 'Список дел',
-            icon: 'fas fa-tasks',
-            id: config.id
-        });
-        
-        this.#todos = config.todos || [];
+  render() {
+    const root = super.render();
+    // заглушка содержимого
+    this._body.innerHTML = '';
+
+    // Форма добавления
+    const form = document.createElement('form');
+    form.className = 'todo-form';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Новая задача...';
+    input.required = true;
+
+    const addBtn = document.createElement('button');
+    addBtn.type = 'submit';
+    addBtn.textContent = 'Добавить';
+
+    form.append(input, addBtn);
+
+    // Список задач
+    const list = document.createElement('ul');
+    list.className = 'todo-list';
+
+    this._body.append(form, list);
+
+    // События
+    const onSubmit = (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      this.addTask(text);
+      input.value = '';
+      input.focus();
+    };
+
+    // Делегирование для кликов на элементы списка
+    const onListClick = (e) => {
+      const li = e.target.closest('li');
+      if (!li || !list.contains(li)) return;
+      const taskId = li.dataset.taskId;
+      if (e.target.classList.contains('task-delete')) {
+        this.removeTask(taskId);
+      } else if (e.target.classList.contains('task-toggle') || e.target.tagName === 'LABEL') {
+        this.toggleTask(taskId);
+      }
+    };
+
+    form.addEventListener('submit', onSubmit);
+    list.addEventListener('click', onListClick);
+
+    // сохраняем слушатели для удаления
+    this._listeners.push({ target: form, type: 'submit', handler: onSubmit });
+    this._listeners.push({ target: list, type: 'click', handler: onListClick });
+
+    // запомним ссылки
+    this._refs = { input, list, form };
+
+    // начальная отрисовка задач
+    this._renderList();
+
+    return root;
+  }
+
+  _renderList() {
+    const list = this._refs.list;
+    list.innerHTML = '';
+    if (this.tasks.length === 0) {
+      const li = document.createElement('li');
+      li.className = 'todo-empty';
+      li.textContent = 'Нет задач.';
+      list.appendChild(li);
+      return;
     }
 
-    render() {
-        return `
-            <div class="todo-container">
-                <div class="todo-input-group">
-                    <input type="text" class="todo-input" placeholder="Добавить новую задачу..." maxlength="100">
-                    <button class="btn btn-primary todo-add-btn">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
-                
-                <ul class="todo-list">
-                    ${this.#renderTodoList()}
-                </ul>
-                
-                <div class="todo-stats">
-                    <small>Всего задач: ${this.#todos.length} | Выполнено: ${this.#getCompletedCount()}</small>
-                </div>
-            </div>
-        `;
+    for (const task of this.tasks) {
+      const li = document.createElement('li');
+      li.dataset.taskId = task.id;
+      li.className = 'todo-item';
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'task-toggle';
+      checkbox.checked = !!task.done;
+      checkbox.id = `${this.id}-task-${task.id}`;
+
+      const label = document.createElement('label');
+      label.setAttribute('for', checkbox.id);
+      label.textContent = task.text;
+      if (task.done) label.classList.add('done');
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'task-delete';
+      delBtn.textContent = 'Удалить';
+
+      li.append(checkbox, label, delBtn);
+      list.appendChild(li);
     }
+  }
 
-    #renderTodoList() {
-        if (this.#todos.length === 0) {
-            return '<li class="todo-empty">Нет задач. Добавьте первую задачу!</li>';
-        }
+  addTask(text) {
+    const task = {
+      id: `${Date.now()}-${Math.floor(Math.random()*1000)}`,
+      text,
+      done: false
+    };
+    this.tasks.push(task);
+    this._renderList();
+  }
 
-        return this.#todos.map((todo, index) => `
-            <li class="todo-item" data-index="${index}">
-                <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
-                <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
-                <button class="todo-delete" data-index="${index}">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </li>
-        `).join('');
-    }
+  removeTask(taskId) {
+    this.tasks = this.tasks.filter(t => t.id !== taskId);
+    this._renderList();
+  }
 
-    #getCompletedCount() {
-        return this.#todos.filter(todo => todo.completed).length;
-    }
+  toggleTask(taskId) {
+    this.tasks = this.tasks.map(t => {
+      if (t.id === taskId) return { ...t, done: !t.done };
+      return t;
+    });
+    this._renderList();
+  }
 
-    create() {
-        const element = super.create();
-        this.#setupEventListeners(element);
-        return element;
-    }
-
-    #setupEventListeners(element) {
-        // Добавление новой задачи
-        const addBtn = element.querySelector('.todo-add-btn');
-        const input = element.querySelector('.todo-input');
-
-        const addTodo = () => {
-            const text = input.value.trim();
-            if (text) {
-                this.#todos.push({ text, completed: false });
-                input.value = '';
-                this.#updateView(element);
-            }
-        };
-
-        addBtn.addEventListener('click', addTodo);
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') addTodo();
-        });
-
-        // Делегирование событий для списка
-        const todoList = element.querySelector('.todo-list');
-        todoList.addEventListener('click', (e) => {
-            const todoItem = e.target.closest('.todo-item');
-            if (!todoItem) return;
-
-            const index = parseInt(todoItem.dataset.index);
-
-            // Удаление задачи
-            if (e.target.closest('.todo-delete')) {
-                this.#todos.splice(index, 1);
-                this.#updateView(element);
-            }
-            // Переключение статуса выполнения
-            else if (e.target.classList.contains('todo-checkbox')) {
-                this.#todos[index].completed = e.target.checked;
-                this.#updateView(element);
-            }
-        });
-    }
-
-    #updateView(element) {
-        const todoList = element.querySelector('.todo-list');
-        const stats = element.querySelector('.todo-stats');
-        
-        if (todoList) {
-            todoList.innerHTML = this.#renderTodoList();
-        }
-        
-        if (stats) {
-            stats.innerHTML = `<small>Всего задач: ${this.#todos.length} | Выполнено: ${this.#getCompletedCount()}</small>`;
-        }
-    }
-
-    onDestroy() {
-        console.log(`ToDoWidget сохранено ${this.#todos.length} задач`);
-    }
+  // Переопределяем onDestroy чтобы очистить внутренние ссылки (если нужно)
+  onDestroy() {
+    // В случае, если мы использовали дополнительные глобальные слушатели, удаляем их здесь.
+    this._refs = null;
+  }
 }
