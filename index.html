@@ -4,49 +4,27 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Тематический дашборд — OOP Widgets</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="./styles/main.css" />
   <link rel="stylesheet" href="./styles/components.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <header class="app-header">
-    <div class="header-content">
-      <h1><i class="fas fa-chart-line"></i> Персональный дашборд (OOP виджеты)</h1>
-      <div class="controls">
-        <button id="add-todo" class="btn btn-primary">
-          <i class="fas fa-tasks"></i> ToDo
-        </button>
-        <button id="add-quote" class="btn btn-secondary">
-          <i class="fas fa-quote-right"></i> Quote
-        </button>
-        <button id="add-weather" class="btn btn-success">
-          <i class="fas fa-cloud-sun"></i> Weather
-        </button>
-        <button id="add-crypto" class="btn btn-warning">
-          <i class="fas fa-coins"></i> Crypto
-        </button>
-        <button id="clear-all" class="btn btn-danger">
-          <i class="fas fa-trash"></i> Очистить все
-        </button>
-        <div class="widget-counter">
-          <i class="fas fa-cube"></i>
-          <span id="widget-count">0</span>
-        </div>
-      </div>
+    <h1>Персональный дашборд (OOP виджеты)</h1>
+    <div class="controls">
+      <button id="addTodoBtn">Добавить ToDo</button>
+      <button id="addQuoteBtn">Добавить Quote</button>
+      <button id="clearAllBtn">Удалить все виджеты</button>
     </div>
   </header>
 
   <main class="app-main">
-    <section id="dashboard" class="dashboard-grid"></section>
+    <section id="dashboardContainer" class="dashboard-container"></section>
   </main>
 
   <footer class="app-footer">
     <small>Дашборд демонстрирует принципы ООП: наследование, инкапсуляция, полиморфизм.</small>
   </footer>
 
-  <script type="module" src="./js/main.js"></script>
+  <script type="module" src="./main.js"></script>
 </body>
 </html>

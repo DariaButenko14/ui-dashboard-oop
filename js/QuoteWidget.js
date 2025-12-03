@@ -1,9 +1,10 @@
 ﻿// js/QuoteWidget.js
-import UIComponent from "./UIComponent.js";
+import UIComponent from './UIComponent.js';
 
-class QuoteWidget extends UIComponent {
+export default class QuoteWidget extends UIComponent {
   constructor(config = {}) {
-    super({ title: config.title || "Quote", id: config.id });
+    super({ title: config.title || 'Quote', id: config.id });
+    // Набор цитат — можно расширить
     this.quotes = [
       "Не тот велик, кто никогда не падал, а тот велик — кто падал и вставал. — Конфуций",
       "Учитесь, пока живы; если вы умрете, учиться будет поздно. — Леонардо да Винчи",
@@ -12,22 +13,24 @@ class QuoteWidget extends UIComponent {
       "Кто хочет — ищет возможность. Кто не хочет — ищет причину. — неизвестный"
     ];
     this.current = null;
+    // bound handlers
+    this._listenersLocal = [];
   }
 
   render() {
     const root = super.render();
-    this._body.innerHTML = "";
+    this._body.innerHTML = '';
 
-    const quoteWrap = document.createElement("div");
-    quoteWrap.className = "quote-wrap";
+    const quoteWrap = document.createElement('div');
+    quoteWrap.className = 'quote-wrap';
 
-    const quoteText = document.createElement("blockquote");
-    quoteText.className = "quote-text";
-    quoteText.textContent = "";
+    const quoteText = document.createElement('blockquote');
+    quoteText.className = 'quote-text';
+    quoteText.textContent = '';
 
-    const btn = document.createElement("button");
-    btn.className = "quote-refresh";
-    btn.textContent = "Обновить";
+    const btn = document.createElement('button');
+    btn.className = 'quote-refresh';
+    btn.textContent = 'Обновить';
 
     quoteWrap.append(quoteText, btn);
     this._body.append(quoteWrap);
@@ -37,12 +40,14 @@ class QuoteWidget extends UIComponent {
       this._updateQuoteText();
     };
 
-    btn.addEventListener("click", onRefresh);
-    this._listeners.push({ target: btn, type: "click", handler: onRefresh });
+    btn.addEventListener('click', onRefresh);
+    this._listeners.push({ target: btn, type: 'click', handler: onRefresh });
 
+    // initial
     this._setRandomQuote();
     this._updateQuoteText();
 
+    // ссылки
     this._refs = { quoteText, btn };
 
     return root;
@@ -50,7 +55,7 @@ class QuoteWidget extends UIComponent {
 
   _setRandomQuote() {
     if (!this.quotes || this.quotes.length === 0) {
-      this.current = "Нет цитат.";
+      this.current = 'Нет цитат.';
       return;
     }
     const idx = Math.floor(Math.random() * this.quotes.length);
@@ -67,5 +72,3 @@ class QuoteWidget extends UIComponent {
     this._refs = null;
   }
 }
-
-export default QuoteWidget;
