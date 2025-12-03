@@ -1,293 +1,383 @@
-/* Базовые стили виджетов */
+/* styles/components.css - стили для виджетов */
+
+/* Базовый виджет */
 .widget {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-    transition: var(--transition);
-    border: 1px solid #e0e0e0;
-    position: relative;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.3s ease-out;
 }
 
 .widget:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
 .widget-header {
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #f8fafc, #ffffff);
 }
 
 .widget-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .widget-controls {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 8px;
 }
 
 .widget-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
+  background: transparent;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 14px;
 }
 
 .widget-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text);
 }
 
 .widget-content {
-    padding: 20px;
+  padding: 20px;
 }
-
-/* Стили для конкретных виджетов */
 
 /* ToDo Widget */
 .todo-input-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .todo-input {
-    flex: 1;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: var(--border-radius);
-    font-size: 1rem;
-    transition: var(--transition);
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.2s ease;
 }
 
 .todo-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .todo-list {
-    list-style: none;
-    max-height: 300px;
-    overflow-y: auto;
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid #f1f5f9;
 }
 
 .todo-item {
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    transition: var(--transition);
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
 }
 
 .todo-item:hover {
-    background-color: #f8f9fa;
+  background: #f8fafc;
 }
 
 .todo-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .todo-checkbox {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 2px solid #d1d5db;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.todo-checkbox:checked {
+  background-color: var(--success);
+  border-color: var(--success);
 }
 
 .todo-text {
-    flex: 1;
-    font-size: 1rem;
+  flex: 1;
+  font-size: 14px;
+  color: var(--text);
 }
 
 .todo-text.completed {
-    text-decoration: line-through;
-    color: var(--gray-color);
+  text-decoration: line-through;
+  color: var(--muted);
 }
 
 .todo-delete {
-    background: none;
-    border: none;
-    color: var(--danger-color);
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: var(--transition);
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  opacity: 0.6;
 }
 
 .todo-delete:hover {
-    background-color: #ffeef2;
+  background: #fee2e2;
+  opacity: 1;
 }
 
 /* Quote Widget */
 .quote-content {
-    padding: 30px 20px;
-    text-align: center;
+  padding: 30px 20px;
+  text-align: center;
 }
 
 .quote-text {
-    font-size: 1.3rem;
-    font-style: italic;
-    color: var(--dark-color);
-    margin-bottom: 20px;
-    line-height: 1.8;
+  font-size: 18px;
+  font-style: italic;
+  color: var(--text);
+  margin-bottom: 16px;
+  line-height: 1.6;
+  position: relative;
+}
+
+.quote-text::before,
+.quote-text::after {
+  content: '"';
+  color: var(--accent);
+  font-size: 24px;
+  font-weight: bold;
 }
 
 .quote-author {
-    font-weight: 600;
-    color: var(--primary-color);
-    font-size: 1.1rem;
-}
-
-.quote-controls {
-    display: flex;
-    justify-content: center;
-    margin-top: 25px;
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 15px;
+  margin-top: 20px;
 }
 
 /* Weather Widget */
 .weather-info {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 0;
 }
 
 .weather-icon {
-    font-size: 4rem;
-    color: var(--primary-color);
+  font-size: 48px;
+  color: var(--accent);
+}
+
+.weather-main {
+  flex: 1;
 }
 
 .weather-temp {
-    font-size: 3.5rem;
-    font-weight: 300;
-    color: var(--dark-color);
+  font-size: 36px;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1;
+}
+
+.weather-description {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.weather-city {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
 }
 
 .weather-details {
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 20px;
 }
 
 .weather-detail {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: var(--border-radius);
-    text-align: center;
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 10px;
+  text-align: center;
 }
 
 .detail-label {
-    font-size: 0.9rem;
-    color: var(--gray-color);
-    margin-bottom: 5px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .detail-value {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--dark-color);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
 }
 
 /* Crypto Widget */
 .crypto-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
 }
 
 .crypto-card {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: var(--border-radius);
-    text-align: center;
-    transition: var(--transition);
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 10px;
+  text-align: center;
+  transition: all 0.2s ease;
 }
 
 .crypto-card:hover {
-    background: #e9ecef;
+  background: #f1f5f9;
+  transform: translateY(-2px);
 }
 
 .crypto-name {
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: var(--dark-color);
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.crypto-symbol {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 12px;
 }
 
 .crypto-price {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-    color: var(--primary-color);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
 }
 
 .crypto-change {
-    font-size: 0.9rem;
-    padding: 3px 8px;
-    border-radius: 20px;
-    display: inline-block;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  font-weight: 600;
 }
 
 .crypto-change.positive {
-    background-color: #d4edda;
-    color: #155724;
+  background: #d1fae5;
+  color: #065f46;
 }
 
 .crypto-change.negative {
-    background-color: #f8d7da;
-    color: #721c24;
+  background: #fee2e2;
+  color: #991b1b;
 }
 
-/* Состояния загрузки */
+/* Состояния */
 .loading {
-    text-align: center;
-    padding: 40px;
-    color: var(--gray-color);
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
 }
 
 .loading i {
-    font-size: 2rem;
-    margin-bottom: 15px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+  font-size: 24px;
+  margin-bottom: 12px;
+  animation: spin 1s linear infinite;
 }
 
 .error {
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 15px;
-    border-radius: var(--border-radius);
-    text-align: center;
-    margin: 10px 0;
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+
+.empty-state i {
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: #e5e7eb;
+}
+
+.empty-state h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: var(--text);
 }
 
 /* Анимации */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.widget {
-    animation: fadeIn 0.3s ease-out;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Скроллбар */
+.todo-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.todo-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.todo-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.todo-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
