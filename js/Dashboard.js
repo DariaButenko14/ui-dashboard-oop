@@ -4,29 +4,21 @@ import QuoteWidget from './QuoteWidget.js';
 import WeatherWidget from './WeatherWidget.js';
 import CryptoWidget from './CryptoWidget.js';
 
-export default class Dashboard {
-  /**
-   * @param {HTMLElement} container - DOM элемент, куда будет рендериться сетка виджетов
-   */
+class Dashboard {
   constructor(container) {
     if (!container) throw new Error('Dashboard: container required');
     this.container = container;
     this.widgets = []; // { id, instance, type }
-    this._setupLayout();
+    this.setupLayout();
   }
 
-  _setupLayout() {
+  setupLayout() {
     this.container.classList.add('dashboard-grid');
-    // чистим контейнер
     this.container.innerHTML = '';
   }
 
-  /**
-   * Добавить виджет указанного типа
-   * @param {string} widgetType - 'todo' | 'quote' | 'weather' | 'crypto'
-   */
   addWidget(widgetType = 'todo') {
-    const id = `${widgetType}-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+    const id = `${widgetType}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     let instance;
 
     const cfg = { id };
@@ -51,7 +43,7 @@ export default class Dashboard {
         break;
       default:
         console.warn('Unknown widget type', widgetType);
-        return;
+        return null;
     }
 
     // Рендерим и добавляем в DOM
@@ -59,15 +51,11 @@ export default class Dashboard {
     this.container.appendChild(el);
 
     this.widgets.push({ id, instance, type: widgetType });
-    this._updateWidgetCount();
+    this.updateWidgetCount();
     
     return instance;
   }
 
-  /**
-   * Удалить виджет по id
-   * @param {string} widgetId
-   */
   removeWidget(widgetId) {
     const idx = this.widgets.findIndex(w => w.id === widgetId);
     if (idx === -1) return false;
@@ -79,32 +67,33 @@ export default class Dashboard {
       console.error('Ошибка при удалении виджета', e);
     }
     this.widgets.splice(idx, 1);
-    this._updateWidgetCount();
+    this.updateWidgetCount();
     return true;
   }
 
-  /**
-   * Найти виджет по id
-   */
   findWidget(widgetId) {
     return this.widgets.find(w => w.id === widgetId) || null;
   }
 
-  /**
-   * Очистить все виджеты
-   */
   clearAll() {
-    // Создаем копию массива, чтобы безопасно удалять
-    const widgetsCopy = [...this.widgets];
-    widgetsCopy.forEach(w => {
-      this.removeWidget(w.id);
+    // Удаляем каждый виджет
+    this.widgets.forEach(w => {
+      try {
+        w.instance.destroy();
+      } catch (e) {
+        console.error('Ошибка при удалении виджета', e);
+      }
     });
+    this.widgets = [];
+    this.updateWidgetCount();
   }
 
-  _updateWidgetCount() {
+  updateWidgetCount() {
     const countElement = document.getElementById('widget-count');
     if (countElement) {
       countElement.textContent = this.widgets.length;
     }
   }
 }
+
+export default Dashboard;
