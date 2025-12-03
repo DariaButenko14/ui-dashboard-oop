@@ -1,24 +1,27 @@
 /* styles/main.css - общие стили и визуальные улучшения */
 :root {
-  --bg: #f2f6ff;
+  --bg: #faf7ff; /* Светлый лавандовый фон */
   --card: #ffffff;
-  --accent: #3b82f6;
-  --accent-light: #dbeafe;
-  --text: #1e293b;
-  --muted: #6b7280;
-  --shadow: 0 6px 16px rgba(0,0,0,0.08);
-  --radius: 16px;
-  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  --accent: #8a2be2; /* Фиолетовый акцент вместо синего */
+  --accent-light: #f0e6ff; /* Светло-фиолетовый */
+  --text: #2c2250; /* Темно-фиолетовый текст */
+  --muted: #7e6b9a; /* Приглушенный фиолетовый */
+  --shadow: 0 8px 24px rgba(138, 43, 226, 0.1); /* Тень с фиолетовым оттенком */
+  --radius: 18px; /* Чуть больше скругление */
+  font-family: "Poppins", "Segoe UI", system-ui, sans-serif; /* Шрифт Poppins */
+  line-height: 1.6;
 }
 
-* { box-sizing: border-box; }
+* { 
+  box-sizing: border-box; 
+}
 
 html, body {
   height: 100%;
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-size: 15px;
+  font-size: 16px; /* Немного больше базовый размер */
   transition: background 0.3s ease;
 }
 
@@ -26,54 +29,61 @@ html, body {
   display:flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 24px;
-  background: linear-gradient(90deg,#ffffff, #f7fbff);
-  border-bottom: 1px solid rgba(0,0,0,0.04);
+  padding: 20px 28px; /* Чуть больше отступы */
+  background: linear-gradient(90deg, #ffffff, #f9f5ff); /* Фиолетовый градиент */
+  border-bottom: 1px solid rgba(138, 43, 226, 0.1); /* Фиолетовая граница */
+  box-shadow: 0 4px 12px rgba(138, 43, 226, 0.08);
 }
 
 .app-header h1 {
   margin:0;
-  font-size: 18px;
+  font-size: 22px; /* Чуть больше заголовок */
   font-weight: 600;
-  color: var(--text);
+  color: var(--accent); /* Фиолетовый цвет заголовка */
+  letter-spacing: -0.5px;
 }
 
 .controls button {
   background: var(--accent-light);
   color: var(--accent);
-  border: none;
-  border-radius: 20px;
-  padding: 8px 14px;
+  border: 1px solid rgba(138, 43, 226, 0.2);
+  border-radius: 24px; /* Еще более скругленные кнопки */
+  padding: 10px 18px; /* Чуть больше кнопки */
   font-weight: 500;
-  margin-left: 8px;
+  margin-left: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  font-family: "Poppins", sans-serif;
 }
 
 .controls button:hover {
   background: var(--accent);
   color: white;
+  transform: translateY(-2px); /* Легкий подъем при наведении */
+  box-shadow: 0 6px 12px rgba(138, 43, 226, 0.2);
 }
 
 .app-main {
-  padding: 20px;
-  max-width: 1200px;
+  padding: 28px; /* Чуть больше отступы */
+  max-width: 1300px; /* Чуть шире контейнер */
   margin: 0 auto;
-  min-height: calc(100vh - 140px);
+  min-height: calc(100vh - 150px);
 }
 
 .app-footer {
-  padding: 12px 24px;
+  padding: 16px 28px;
   text-align: center;
   color: var(--muted);
-  font-size: 13px;
-  border-top: 1px solid rgba(0,0,0,0.03);
+  font-size: 14px;
+  border-top: 1px solid rgba(138, 43, 226, 0.08);
+  background: linear-gradient(90deg, #ffffff, #f9f5ff);
+  font-weight: 500;
 }
 
 /* Сетка дашборда */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Чуть шире карточки */
+  gap: 24px; /* Чуть больше промежутки */
   align-items: start;
 }
