@@ -1,214 +1,160 @@
-/* Стили для виджетов одногруппницы */
-.widget {
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
+/* Weather Widget Styles */
+.weather-container {
+  padding: 10px 0;
 }
 
-.widget-header {
-  padding: 18px 20px;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+.weather-city {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 15px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  background: linear-gradient(90deg, #f8fafc, #ffffff);
-}
-
-.widget-header h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.widget-actions {
-  display: flex;
   gap: 8px;
 }
 
-.widget-actions button {
-  background: transparent;
-  border: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  color: var(--muted);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  font-size: 14px;
-}
-
-.widget-actions button:hover {
-  background: rgba(0,0,0,0.05);
-  color: var(--text);
-}
-
-.widget-body {
-  padding: 20px;
-}
-
-/* ToDo Widget */
-.todo-form {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.todo-form input {
-  flex: 1;
-  padding: 12px 16px;
-  border: 2px solid #e5e7eb;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-}
-
-.todo-form button {
-  padding: 12px 24px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.todo-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.todo-item {
-  padding: 14px 16px;
-  border-bottom: 1px solid #f1f5f9;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.todo-empty {
-  padding: 20px;
-  text-align: center;
-  color: var(--muted);
-  font-style: italic;
-}
-
-.task-toggle {
-  width: 18px;
-  height: 18px;
-}
-
-.task-toggle:checked + label {
-  text-decoration: line-through;
-  color: var(--muted);
-}
-
-.task-delete {
-  margin-left: auto;
-  padding: 6px 12px;
-  background: #fee2e2;
-  color: #dc2626;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-/* Quote Widget */
-.quote-wrap {
-  text-align: center;
-  padding: 20px;
-}
-
-.quote-text {
-  font-size: 18px;
-  font-style: italic;
-  color: var(--text);
-  margin-bottom: 20px;
-  line-height: 1.6;
-}
-
-.quote-refresh {
-  padding: 10px 24px;
-  background: var(--accent-light);
+.weather-city i {
   color: var(--accent);
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
+}
+
+.weather-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: var(--accent-light);
+  border-radius: var(--radius);
+}
+
+.weather-temp {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: baseline;
+}
+
+.temp-value {
+  font-size: 42px;
+}
+
+.temp-unit {
+  font-size: 24px;
+  opacity: 0.8;
+}
+
+.weather-condition {
+  font-size: 16px;
+  color: var(--text);
   font-weight: 500;
 }
 
-/* Weather Widget */
-.weather-wrap {
-  padding: 20px;
+.weather-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
-.weather-wrap h4 {
-  margin: 0 0 16px 0;
-  color: var(--text);
-  font-size: 16px;
+.weather-detail {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.weather-temp,
-.weather-desc,
-.weather-humidity {
-  margin-bottom: 12px;
-  font-size: 14px;
+.detail-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 18px;
+  font-weight: 600;
   color: var(--text);
 }
 
 .weather-refresh {
-  margin-top: 16px;
-  padding: 10px 24px;
-  background: var(--accent-light);
-  color: var(--accent);
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: white;
   border: none;
-  border-radius: 20px;
-  cursor: pointer;
+  border-radius: 10px;
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-/* Crypto Widget */
-.crypto-wrap {
-  padding: 20px;
+.weather-refresh:hover {
+  background: #2563eb;
+}
+
+/* Crypto Widget Styles */
+.crypto-container {
+  padding: 10px 0;
 }
 
 .crypto-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 20px 0;
+  margin-bottom: 20px;
 }
 
 .crypto-item {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f1f5f9;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 10px;
+  background: #f9fafb;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.crypto-item:hover {
+  background: #eef2ff;
+  transform: translateX(5px);
+}
+
+.crypto-info {
+  flex: 1;
 }
 
 .crypto-name {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
+  margin-bottom: 3px;
+}
+
+.crypto-symbol {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
 }
 
 .crypto-price {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
+  margin: 0 15px;
+  min-width: 80px;
+  text-align: right;
 }
 
 .crypto-change {
-  padding: 4px 8px;
-  border-radius: 12px;
+  padding: 5px 10px;
+  border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
+  min-width: 70px;
+  text-align: center;
 }
 
 .crypto-change.positive {
@@ -224,10 +170,19 @@
 .crypto-refresh {
   width: 100%;
   padding: 12px;
-  background: var(--accent-light);
-  color: var(--accent);
+  background: var(--accent);
+  color: white;
   border: none;
-  border-radius: 12px;
-  cursor: pointer;
+  border-radius: 10px;
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.crypto-refresh:hover {
+  background: #2563eb;
 }

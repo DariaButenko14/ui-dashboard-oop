@@ -1,6 +1,8 @@
 // js/Dashboard.js
 import ToDoWidget from './ToDoWidget.js';
 import QuoteWidget from './QuoteWidget.js';
+import WeatherWidget from './WeatherWidget.js';
+import CryptoWidget from './CryptoWidget.js';
 
 export default class Dashboard {
   /**
@@ -21,13 +23,16 @@ export default class Dashboard {
 
   /**
    * Добавить виджет указанного типа
-   * @param {string} widgetType - 'todo' | 'quote'
+   * @param {string} widgetType - 'todo' | 'quote' | 'weather' | 'crypto'
    */
   addWidget(widgetType = 'todo') {
     const id = `${widgetType}-${Date.now()}-${Math.floor(Math.random()*1000)}`;
     let instance;
 
-    const cfg = { id, title: widgetType === 'todo' ? 'Список дел' : 'Цитаты' };
+    const cfg = { 
+      id, 
+      title: this.getWidgetTitle(widgetType)
+    };
 
     switch (widgetType) {
       case 'todo':
@@ -35,6 +40,12 @@ export default class Dashboard {
         break;
       case 'quote':
         instance = new QuoteWidget(cfg);
+        break;
+      case 'weather':
+        instance = new WeatherWidget(cfg);
+        break;
+      case 'crypto':
+        instance = new CryptoWidget(cfg);
         break;
       default:
         console.warn('Unknown widget type', widgetType);
@@ -47,6 +58,16 @@ export default class Dashboard {
 
     this.widgets.push({ id, instance, type: widgetType });
     return instance;
+  }
+
+  getWidgetTitle(widgetType) {
+    const titles = {
+      'todo': 'Список дел',
+      'quote': 'Цитаты',
+      'weather': 'Погода',
+      'crypto': 'Криптовалюты'
+    };
+    return titles[widgetType] || 'Виджет';
   }
 
   /**
