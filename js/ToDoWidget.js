@@ -1,86 +1,119 @@
-import UIComponent from './UIComponent.js';
+import { UIComponent } from './UIComponent.js';
 
-export default class ToDoWidget extends UIComponent {
-  constructor(config) {
-    super(config);
-    this.tasks = []; // { id, text, done }
-  }
+export class ToDoWidget extends UIComponent {
+    #todos;
 
-  render() {
-    const { wrapper, body } = this._createBase();
+    constructor(config = {}) {
+        super({
+            title: config.title || 'Список дел',
+            icon: 'fas fa-tasks',
+            id: config.id
+        });
+        
+        this.#todos = config.todos || [];
+    }
 
-    body.innerHTML = `
-      <div class="todo-input">
-        <input type="text" placeholder="Новая задача..." />
-        <button class="add">Добавить</button>
-      </div>
-      <ul class="todo-list"></ul>
-    `;
-
-    const input = body.querySelector('input');
-    const btnAdd = body.querySelector('.add');
-    const list = body.querySelector('.todo-list');
-
-    const addTask = () => {
-      const text = input.value.trim();
-      if (!text) return;
-      const t = { id: crypto.randomUUID(), text, done: false };
-      this.tasks.push(t);
-      renderList();
-      input.value = '';
-      input.focus();
-    };
-
-    const toggleTask = (id) => {
-      const t = this.tasks.find(x => x.id === id);
-      if (t) { t.done = !t.done; renderList(); }
-    };
-
-    const removeTask = (id) => {
-      this.tasks = this.tasks.filter(x => x.id !== id);
-      renderList();
-    };
-
-    const renderList = () => {
-      list.innerHTML = '';
-      this.tasks.forEach(t => {
-        const li = document.createElement('li');
-        li.className = t.done ? 'done' : '';
-        li.innerHTML = `
-          <label>
-            <input type="checkbox" ${t.done ? 'checked' : ''}>
-            <span>${t.text}</span>
-          </label>
-          <button class="remove">×</button>
+    render() {
+        return `
+            <div class="todo-container">
+                <div class="todo-input-group">
+                    <input type="text" class="todo-input" placeholder="Добавить новую задачу..." maxlength="100">
+                    <button class="btn btn-primary todo-add-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                
+                <ul class="todo-list">
+                    ${this.#renderTodoList()}
+                </ul>
+                
+                <div class="todo-stats">
+                    <small>Всего задач: ${this.#todos.length} | Выполнено: ${this.#getCompletedCount()}</small>
+                </div>
+            </div>
         `;
-        // обработчики
-        const chk = li.querySelector('input[type="checkbox"]');
-        const btnRemove = li.querySelector('.remove');
+    }
 
-        const onChk = () => toggleTask(t.id);
-        const onRemove = () => removeTask(t.id);
+    #renderTodoList() {
+        if (this.#todos.length === 0) {
+            return '<li class="todo-empty">Нет задач. Добавьте первую задачу!</li>';
+        }
 
-        chk.addEventListener('change', onChk);
-        btnRemove.addEventListener('click', onRemove);
+        return this.#todos.map((todo, index) => `
+            <li class="todo-item" data-index="${index}">
+                <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
+                <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
+                <button class="todo-delete" data-index="${index}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </li>
+        `).join('');
+    }
 
-        // сохраняем, чтобы корректно убрать в destroy()
-        this._handlers.push({ target: chk, type: 'change', fn: onChk });
-        this._handlers.push({ target: btnRemove, type: 'click', fn: onRemove });
+    #getCompletedCount() {
+        return this.#todos.filter(todo => todo.completed).length;
+    }
 
-        list.appendChild(li);
-      });
-    };
+    create() {
+        const element = super.create();
+        this.#setupEventListeners(element);
+        return element;
+    }
 
-    const onAddClick = addTask;
-    const onEnter = (e) => { if (e.key === 'Enter') addTask(); };
+    #setupEventListeners(element) {
+        // Добавление новой задачи
+        const addBtn = element.querySelector('.todo-add-btn');
+        const input = element.querySelector('.todo-input');
 
-    btnAdd.addEventListener('click', onAddClick);
-    input.addEventListener('keydown', onEnter);
+        const addTodo = () => {
+            const text = input.value.trim();
+            if (text) {
+                this.#todos.push({ text, completed: false });
+                input.value = '';
+                this.#updateView(element);
+            }
+        };
 
-    this._handlers.push({ target: btnAdd, type: 'click', fn: onAddClick });
-    this._handlers.push({ target: input, type: 'keydown', fn: onEnter });
+        addBtn.addEventListener('click', addTodo);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTodo();
+        });
 
-    this.element = wrapper;
-    return wrapper;
-  }
+        // Делегирование событий для списка
+        const todoList = element.querySelector('.todo-list');
+        todoList.addEventListener('click', (e) => {
+            const todoItem = e.target.closest('.todo-item');
+            if (!todoItem) return;
+
+            const index = parseInt(todoItem.dataset.index);
+
+            // Удаление задачи
+            if (e.target.closest('.todo-delete')) {
+                this.#todos.splice(index, 1);
+                this.#updateView(element);
+            }
+            // Переключение статуса выполнения
+            else if (e.target.classList.contains('todo-checkbox')) {
+                this.#todos[index].completed = e.target.checked;
+                this.#updateView(element);
+            }
+        });
+    }
+
+    #updateView(element) {
+        const todoList = element.querySelector('.todo-list');
+        const stats = element.querySelector('.todo-stats');
+        
+        if (todoList) {
+            todoList.innerHTML = this.#renderTodoList();
+        }
+        
+        if (stats) {
+            stats.innerHTML = `<small>Всего задач: ${this.#todos.length} | Выполнено: ${this.#getCompletedCount()}</small>`;
+        }
+    }
+
+    onDestroy() {
+        console.log(`ToDoWidget сохранено ${this.#todos.length} задач`);
+    }
 }

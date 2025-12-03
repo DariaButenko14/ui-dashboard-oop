@@ -1,84 +1,114 @@
-// Базовый абстрактный класс
-export default class UIComponent {
-    constructor({ title, id }) {
-      if (new.target === UIComponent) {
-        throw new Error('UIComponent is abstract and cannot be instantiated directly');
-      }
-      this.title = title;
-      this.id = id ?? crypto.randomUUID();
-      this.element = null;
-  
-      // Сохраняем ссылки на обработчики, чтобы корректно удалить их в destroy()
-      this._handlers = [];
-    }
-  
-    // Создаёт обёртку и заголовок с кнопками
-    _createBase() {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'widget';
-      wrapper.dataset.widgetId = this.id;
-  
-      const header = document.createElement('div');
-      header.className = 'widget-header';
-  
-      const titleEl = document.createElement('h3');
-      titleEl.textContent = this.title;
-  
-      const controls = document.createElement('div');
-      controls.className = 'widget-controls';
-      const btnMin = document.createElement('button');
-      btnMin.className = 'icon-btn';
-      btnMin.title = 'Свернуть/развернуть';
-      btnMin.textContent = '—';
-  
-      const btnClose = document.createElement('button');
-      btnClose.className = 'icon-btn danger';
-      btnClose.title = 'Закрыть';
-      btnClose.textContent = '×';
-  
-      controls.append(btnMin, btnClose);
-      header.append(titleEl, controls);
-  
-      const body = document.createElement('div');
-      body.className = 'widget-body';
-  
-      wrapper.append(header, body);
-  
-      // Логика кнопок (делегируем событие дашборду через кастомное событие)
-      const onMinimize = () => body.classList.toggle('hidden');
-      const onClose = () => {
-        wrapper.dispatchEvent(new CustomEvent('widget:close', {
-          bubbles: true,
-          detail: { id: this.id }
-        }));
-      };
-  
-      btnMin.addEventListener('click', onMinimize);
-      btnClose.addEventListener('click', onClose);
-  
-      // Запоминаем для удаления
-      this._handlers.push({ target: btnMin, type: 'click', fn: onMinimize });
-      this._handlers.push({ target: btnClose, type: 'click', fn: onClose });
-  
-      return { wrapper, body };
-    }
-  
-    // Должен вернуть DOM-элемент виджета
-    render() {
-      throw new Error('render() must be implemented by subclass');
-    }
-  
-    // Удаление слушателей и DOM
-    destroy() {
-      if (this.element) {
-        // Удаляем все слушатели, которые мы сохраняли
-        for (const { target, type, fn } of this._handlers) {
-          target.removeEventListener(type, fn);
-        }
-        this._handlers = [];
-        this.element.remove();
+// Базовый класс для всех виджетов
+export class UIComponent {
+    #id;
+    #title;
+    #icon;
+
+    constructor(config = {}) {
+        this.#id = config.id || `widget-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        this.#title = config.title || 'Виджет';
+        this.#icon = config.icon || 'fas fa-cube';
+        this.isMinimized = false;
         this.element = null;
-      }
     }
-  }
-  
+
+    // Геттеры для приватных полей
+    get id() {
+        return this.#id;
+    }
+
+    get title() {
+        return this.#title;
+    }
+
+    get icon() {
+        return this.#icon;
+    }
+
+    // Абстрактный метод render (должен быть переопределен в дочерних классах)
+    render() {
+        throw new Error('Метод render должен быть реализован в дочернем классе');
+    }
+
+    // Создает базовую структуру виджета
+    #createWidgetElement(content) {
+        const widget = document.createElement('div');
+        widget.className = 'widget';
+        widget.id = this.#id;
+        widget.dataset.widgetId = this.#id;
+
+        widget.innerHTML = `
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="${this.#icon}"></i>
+                    <span>${this.#title}</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-btn minimize-btn" title="Свернуть">
+                        <i class="fas ${this.isMinimized ? 'fa-expand' : 'fa-minus'}"></i>
+                    </button>
+                    <button class="widget-btn close-btn" title="Закрыть">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                ${content}
+            </div>
+        `;
+
+        return widget;
+    }
+
+    // Добавляет обработчики событий для виджета
+    #addEventListeners(element) {
+        const closeBtn = element.querySelector('.close-btn');
+        const minimizeBtn = element.querySelector('.minimize-btn');
+        const content = element.querySelector('.widget-content');
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.destroy());
+        }
+
+        if (minimizeBtn) {
+            minimizeBtn.addEventListener('click', () => {
+                this.isMinimized = !this.isMinimized;
+                content.style.display = this.isMinimized ? 'none' : 'block';
+                minimizeBtn.innerHTML = `<i class="fas ${this.isMinimized ? 'fa-expand' : 'fa-minus'}"></i>`;
+            });
+        }
+    }
+
+    // Создает и возвращает готовый виджет
+    create() {
+        const content = this.render();
+        const widgetElement = this.#createWidgetElement(content);
+        this.element = widgetElement;
+        this.#addEventListeners(widgetElement);
+        return widgetElement;
+    }
+
+    // Уничтожает виджет
+    destroy() {
+        if (this.element && this.element.parentNode) {
+            this.element.parentNode.removeChild(this.element);
+            this.element = null;
+            this.onDestroy();
+        }
+    }
+
+    // Метод, вызываемый при уничтожении (можно переопределить)
+    onDestroy() {
+        console.log(`Виджет ${this.#id} уничтожен`);
+    }
+
+    // Обновляет содержимое виджета
+    update(content) {
+        if (this.element) {
+            const contentElement = this.element.querySelector('.widget-content');
+            if (contentElement) {
+                contentElement.innerHTML = content;
+            }
+        }
+    }
+}

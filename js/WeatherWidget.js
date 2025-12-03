@@ -1,85 +1,163 @@
-import UIComponent from './UIComponent.js';
+import { UIComponent } from './UIComponent.js';
 
-export default class WeatherWidget extends UIComponent {
-  constructor(config) {
-    super(config);
-    this.state = { status: 'init', temp: null, city: null, error: null };
-  }
+export class WeatherWidget extends UIComponent {
+    #city;
+    #weatherData;
 
-  async fetchWeather(lat, lon) {
-    // Простая текущая температура
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    return data?.current?.temperature_2m;
-  }
+    constructor(config = {}) {
+        super({
+            title: config.title || 'Погода',
+            icon: 'fas fa-cloud-sun',
+            id: config.id
+        });
+        
+        this.#city = config.city || 'Moscow';
+        this.#weatherData = null;
+        this.#fetchWeather();
+    }
 
-  async getLocation() {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) return reject(new Error('Геолокация недоступна'));
-      navigator.geolocation.getCurrentPosition(
-        (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-        (err) => reject(err),
-        { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
-      );
-    });
-  }
+    async #fetchWeather() {
+        try {
+            // Используем OpenWeatherMap API (нужно заменить API_KEY на свой)
+            const API_KEY = 'ваш_api_ключ'; // Зарегистрируйтесь на openweathermap.org для получения ключа
+            const response = await fetch(
+                `https://api.openweathermap.org/data/2.5/weather?q=${this.#city}&units=metric&appid=${API_KEY}&lang=ru`
+            );
+            
+            if (!response.ok) {
+                throw new Error('Ошибка получения данных о погоде');
+            }
+            
+            const data = await response.json();
+            this.#weatherData = {
+                temp: Math.round(data.main.temp),
+                feelsLike: Math.round(data.main.feels_like),
+                humidity: data.main.humidity,
+                pressure: data.main.pressure,
+                windSpeed: data.wind.speed,
+                description: data.weather[0].description,
+                icon: data.weather[0].icon,
+                city: data.name,
+                country: data.sys.country
+            };
+            
+            if (this.element) {
+                this.update(this.render());
+            }
+        } catch (error) {
+            console.error('Ошибка при получении погоды:', error);
+            this.#weatherData = {
+                temp: 20,
+                feelsLike: 19,
+                humidity: 65,
+                pressure: 1013,
+                windSpeed: 3,
+                description: 'ясно',
+                icon: '01d',
+                city: this.#city,
+                country: 'RU'
+            };
+            
+            if (this.element) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error';
+                errorDiv.textContent = 'Не удалось загрузить актуальные данные. Показаны демо-данные.';
+                this.element.querySelector('.widget-content').prepend(errorDiv);
+            }
+        }
+    }
 
-  async render() {
-    const { wrapper, body } = this._createBase();
+    #getWeatherIcon(iconCode) {
+        const icons = {
+            '01d': 'fas fa-sun',
+            '01n': 'fas fa-moon',
+            '02d': 'fas fa-cloud-sun',
+            '02n': 'fas fa-cloud-moon',
+            '03d': 'fas fa-cloud',
+            '03n': 'fas fa-cloud',
+            '04d': 'fas fa-cloud',
+            '04n': 'fas fa-cloud',
+            '09d': 'fas fa-cloud-rain',
+            '09n': 'fas fa-cloud-rain',
+            '10d': 'fas fa-cloud-showers-heavy',
+            '10n': 'fas fa-cloud-showers-heavy',
+            '11d': 'fas fa-bolt',
+            '11n': 'fas fa-bolt',
+            '13d': 'fas fa-snowflake',
+            '13n': 'fas fa-snowflake',
+            '50d': 'fas fa-smog',
+            '50n': 'fas fa-smog'
+        };
+        
+        return icons[iconCode] || 'fas fa-question-circle';
+    }
 
-    body.innerHTML = `
-      <div class="weather">
-        <p class="status">Определяю местоположение…</p>
-        <p class="temp"></p>
-        <div class="controls">
-          <button class="refresh">Обновить</button>
-        </div>
-      </div>
-    `;
+    render() {
+        if (!this.#weatherData) {
+            return '<div class="loading"><i class="fas fa-spinner"></i><p>Загрузка погоды...</p></div>';
+        }
 
-    const statusEl = body.querySelector('.status');
-    const tempEl = body.querySelector('.temp');
-    const btn = body.querySelector('.refresh');
+        const weather = this.#weatherData;
+        
+        return `
+            <div class="weather-container">
+                <div class="weather-info">
+                    <div class="weather-icon">
+                        <i class="${this.#getWeatherIcon(weather.icon)}"></i>
+                    </div>
+                    <div class="weather-main">
+                        <div class="weather-temp">${weather.temp}°C</div>
+                        <div class="weather-description">${weather.description}</div>
+                        <div class="weather-city">${weather.city}, ${weather.country}</div>
+                    </div>
+                </div>
+                
+                <div class="weather-details">
+                    <div class="weather-detail">
+                        <div class="detail-label">Ощущается как</div>
+                        <div class="detail-value">${weather.feelsLike}°C</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="detail-label">Влажность</div>
+                        <div class="detail-value">${weather.humidity}%</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="detail-label">Давление</div>
+                        <div class="detail-value">${weather.pressure} гПа</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="detail-label">Ветер</div>
+                        <div class="detail-value">${weather.windSpeed} м/с</div>
+                    </div>
+                </div>
+                
+                <div class="weather-controls">
+                    <button class="btn btn-secondary refresh-weather">
+                        <i class="fas fa-sync-alt"></i> Обновить
+                    </button>
+                </div>
+            </div>
+        `;
+    }
 
-    const updateUI = () => {
-      if (this.state.status === 'loading') {
-        statusEl.textContent = 'Загрузка погоды…';
-        tempEl.textContent = '';
-      } else if (this.state.status === 'ready') {
-        statusEl.textContent = this.state.city ? `Ваше местоположение` : 'Текущая погода';
-        tempEl.textContent = `Температура: ${this.state.temp} °C`;
-      } else if (this.state.status === 'error') {
-        statusEl.textContent = 'Ошибка: ' + this.state.error;
-        tempEl.textContent = '';
-      }
-    };
+    create() {
+        const element = super.create();
+        this.#setupEventListeners(element);
+        return element;
+    }
 
-    const onRefresh = async () => {
-      btn.disabled = true;
-      this.state.status = 'loading';
-      updateUI();
-      try {
-        // Получаем координаты
-        const { lat, lon } = await this.getLocation();
-        // Забираем температуру
-        const temp = await this.fetchWeather(lat, lon);
-        this.state = { status: 'ready', temp, city: null, error: null };
-      } catch (e) {
-        this.state = { status: 'error', temp: null, city: null, error: e.message || 'неизвестно' };
-      }
-      updateUI();
-      btn.disabled = false;
-    };
-
-    btn.addEventListener('click', onRefresh);
-    this._handlers.push({ target: btn, type: 'click', fn: onRefresh });
-
-    // первичная загрузка
-    onRefresh();
-
-    this.element = wrapper;
-    return wrapper;
-  }
+    #setupEventListeners(element) {
+        const refreshBtn = element.querySelector('.refresh-weather');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обновление...';
+                refreshBtn.disabled = true;
+                
+                this.#fetchWeather().finally(() => {
+                    refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Обновить';
+                    refreshBtn.disabled = false;
+                });
+            });
+        }
+    }
 }

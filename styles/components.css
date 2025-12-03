@@ -1,89 +1,293 @@
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-  }
-  
-  .widget {
-    background: var(--card);
-    border-radius: 12px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+/* Базовые стили виджетов */
+.widget {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
     overflow: hidden;
-    border: 1px solid #e5e7eb;
-  }
-  
-  .widget-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 12px;
-    border-bottom: 1px solid #eef2f7;
-  }
-  
-  .widget-controls .icon-btn {
-    background: #e5e7eb;
-    color: #111827;
-    border-radius: 8px;
-    padding: 4px 8px;
-    margin-left: 6px;
-  }
-  .widget-controls .icon-btn:hover { filter: brightness(0.98); }
-  .widget-controls .danger { background: var(--danger); color: white; }
-  
-  .widget-body {
-    padding: 12px;
-  }
-  .widget-body.hidden { display: none; }
-  
-  /* ToDo */
-  .todo-input {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-  .todo-input input {
-    flex: 1;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    outline: none;
-  }
-  .todo-input input:focus { box-shadow: 0 0 0 4px var(--ring); }
-  
-  .todo-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .todo-list li {
+    transition: var(--transition);
+    border: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.widget:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+}
+
+.widget-header {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 8px;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    margin-bottom: 6px;
-  }
-  .todo-list li.done span { text-decoration: line-through; color: var(--muted); }
-  .todo-list .remove {
-    background: var(--danger);
-    color: #fff;
-    border-radius: 8px;
-    border: 0;
-    padding: 4px 8px;
+}
+
+.widget-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.widget-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.widget-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: white;
     cursor: pointer;
-  }
-  
-  /* Quote */
-  .quote {
-    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.widget-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.widget-content {
+    padding: 20px;
+}
+
+/* Стили для конкретных виджетов */
+
+/* ToDo Widget */
+.todo-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.todo-input {
+    flex: 1;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.todo-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.todo-list {
+    list-style: none;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.todo-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: var(--transition);
+}
+
+.todo-item:hover {
+    background-color: #f8f9fa;
+}
+
+.todo-item:last-child {
+    border-bottom: none;
+}
+
+.todo-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.todo-text {
+    flex: 1;
+    font-size: 1rem;
+}
+
+.todo-text.completed {
+    text-decoration: line-through;
+    color: var(--gray-color);
+}
+
+.todo-delete {
+    background: none;
+    border: none;
+    color: var(--danger-color);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.todo-delete:hover {
+    background-color: #ffeef2;
+}
+
+/* Quote Widget */
+.quote-content {
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.quote-text {
+    font-size: 1.3rem;
     font-style: italic;
-  }
-  .quote p { margin: 0 0 6px 0; }
-  .quote cite { color: var(--muted); }
-  
-  /* Weather */
-  .weather .status { margin: 0 0 8px 0; color: var(--muted); }
-  .weather .temp { font-weight: 600; font-size: 18px; margin: 0 0 8px 0; }
-  .weather .controls { display: flex; justify-content: flex-end; }
-  
+    color: var(--dark-color);
+    margin-bottom: 20px;
+    line-height: 1.8;
+}
+
+.quote-author {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.quote-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+/* Weather Widget */
+.weather-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.weather-icon {
+    font-size: 4rem;
+    color: var(--primary-color);
+}
+
+.weather-temp {
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: var(--dark-color);
+}
+
+.weather-details {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.weather-detail {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.detail-label {
+    font-size: 0.9rem;
+    color: var(--gray-color);
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+/* Crypto Widget */
+.crypto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.crypto-card {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    transition: var(--transition);
+}
+
+.crypto-card:hover {
+    background: #e9ecef;
+}
+
+.crypto-name {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--dark-color);
+}
+
+.crypto-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.crypto-change {
+    font-size: 0.9rem;
+    padding: 3px 8px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.crypto-change.positive {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.crypto-change.negative {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Состояния загрузки */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--gray-color);
+}
+
+.loading i {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.widget {
+    animation: fadeIn 0.3s ease-out;
+}

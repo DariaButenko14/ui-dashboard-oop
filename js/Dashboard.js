@@ -1,39 +1,104 @@
-import ToDoWidget from './ToDoWidget.js';
-import QuoteWidget from './QuoteWidget.js';
-import WeatherWidget from './WeatherWidget.js';
+export class Dashboard {
+    #widgets;
+    #container;
+    #emptyState;
 
-const widgetRegistry = {
-  todo: (id) => new ToDoWidget({ title: 'Список дел', id }),
-  quote: (id) => new QuoteWidget({ title: 'Случайная цитата (API)', id }),
-  weather: (id) => new WeatherWidget({ title: 'Погода (API)', id }),
-};
-
-export default class Dashboard {
-  constructor(container) {
-    this.container = container;
-    this.widgets = [];
-
-    // Один общий слушатель: ловим закрытие любого виджета
-    this._onWidgetClose = (e) => this.removeWidget(e.detail.id);
-    this.container.addEventListener('widget:close', this._onWidgetClose);
-  }
-
-  addWidget(type) {
-    const factory = widgetRegistry[type];
-    if (!factory) return;
-
-    const id = crypto.randomUUID();
-    const widget = factory(id);
-    const el = widget.render();
-    this.container.appendChild(el);
-    this.widgets.push(widget);
-  }
-
-  removeWidget(id) {
-    const idx = this.widgets.findIndex(w => w.id === id);
-    if (idx !== -1) {
-      this.widgets[idx].destroy();
-      this.widgets.splice(idx, 1);
+    constructor(containerId) {
+        this.#widgets = new Map();
+        this.#container = document.getElementById(containerId);
+        
+        if (this.#container) {
+            this.#emptyState = this.#container.querySelector('#empty-state');
+        }
     }
-  }
+
+    addWidget(type, config = {}) {
+        let widget;
+        const widgetId = config.id || `${type}-${Date.now()}`;
+
+        switch (type.toLowerCase()) {
+            case 'todo':
+                widget = new window.ToDoWidget({ ...config, id: widgetId });
+                break;
+            case 'quote':
+                widget = new window.QuoteWidget({ ...config, id: widgetId });
+                break;
+            case 'weather':
+                widget = new window.WeatherWidget({ ...config, id: widgetId });
+                break;
+            case 'crypto':
+                widget = new window.CryptoWidget({ ...config, id: widgetId });
+                break;
+            default:
+                console.error(`Неизвестный тип виджета: ${type}`);
+                return null;
+        }
+
+        const widgetElement = widget.create();
+        this.#widgets.set(widgetId, widget);
+        
+        // Скрываем состояние "пустой дашборд"
+        if (this.#emptyState && this.#emptyState.style.display !== 'none') {
+            this.#emptyState.style.display = 'none';
+        }
+        
+        // Добавляем виджет в контейнер
+        if (this.#container) {
+            this.#container.appendChild(widgetElement);
+        }
+        
+        // Обновляем счетчик виджетов
+        this.#updateWidgetCount();
+        
+        return widgetId;
+    }
+
+    removeWidget(widgetId) {
+        const widget = this.#widgets.get(widgetId);
+        
+        if (widget) {
+            widget.destroy();
+            this.#widgets.delete(widgetId);
+            
+            // Показываем состояние "пустой дашборд", если виджетов не осталось
+            if (this.#widgets.size === 0 && this.#emptyState) {
+                this.#emptyState.style.display = 'block';
+            }
+            
+            this.#updateWidgetCount();
+            return true;
+        }
+        
+        return false;
+    }
+
+    getWidget(widgetId) {
+        return this.#widgets.get(widgetId);
+    }
+
+    getAllWidgets() {
+        return Array.from(this.#widgets.values());
+    }
+
+    clearAll() {
+        this.#widgets.forEach(widget => widget.destroy());
+        this.#widgets.clear();
+        
+        if (this.#emptyState) {
+            this.#emptyState.style.display = 'block';
+        }
+        
+        this.#updateWidgetCount();
+    }
+
+    #updateWidgetCount() {
+        const countElement = document.getElementById('widget-count');
+        if (countElement) {
+            countElement.textContent = this.#widgets.size;
+        }
+    }
+
+    getWidgetCount() {
+        return this.#widgets.size;
+    }
 }
