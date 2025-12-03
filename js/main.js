@@ -1,10 +1,10 @@
 // Импорт классов
-import { UIComponent } from './ui/UIComponent.js';
-import { ToDoWidget } from './ui/ToDoWidget.js';
-import { QuoteWidget } from './ui/QuoteWidget.js';
-import { WeatherWidget } from './ui/WeatherWidget.js';
-import { CryptoWidget } from './ui/CryptoWidget.js';
-import { Dashboard } from './ui/Dashboard.js';
+import { UIComponent } from './UIComponent.js';
+import { ToDoWidget } from './ToDoWidget.js';
+import { QuoteWidget } from './QuoteWidget.js';
+import { WeatherWidget } from './WeatherWidget.js';
+import { CryptoWidget } from './CryptoWidget.js';
+import { Dashboard } from './Dashboard.js';
 
 // Делаем классы доступными глобально
 window.UIComponent = UIComponent;
